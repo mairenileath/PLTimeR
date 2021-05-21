@@ -4,7 +4,7 @@ library(stats)
 library(ggrepel)
 source("functions_subtyping.R")
 
-plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_included, isDiscontinuous, d_split=0.05, d_start=-0.25, d_end=0, d_int=0.005) {
+plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_included, isDiscontinuous, d_split=0.05, d_start=-0.25, d_end=0, d_int=0.005, label_x_line=1.2) {
   
   data <- read.csv(paste0(name,"_wgd_ordering_plot_file.txt"), sep = "\t")
   merge <- read.csv(paste0(name,"_mergedseg.txt"), sep = "\t")
@@ -45,7 +45,7 @@ plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_includ
     Count_val <- nrow(merge[merge$ID_cna == unique_cna_name[i],])
     Proportion_val <- (Count_val/samples_count)
     
-    if (Proportion_val >= 0.15) {
+    if (Proportion_val >= 0.25 | Upper_val >= label_x_line) {
       
       if (Name_val == "23:1-155") {
         Name_val <- ""
@@ -70,8 +70,11 @@ plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_includ
   if (hd_included){
     #colours "tomato","medium seagreen","dodgerblue")
     p_colours <- c("#FF6347","#1E90FF","#3CB371")
+    #p_colours <- c("#C03216","#2F5597","#156515")
+    
   } else {
     p_colours <- c("#FF6347","#3CB371")
+    #p_colours <- c("#C03216","#156515")
   }
   
   #text colours
@@ -84,6 +87,13 @@ plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_includ
   
   df_tm_summary$facet <- df_tm_summary$Order < d_split
   
+  df_tm_summary[df_tm_summary$Order > 0.04, c("facet")] <- "A"  
+  df_tm_summary[ df_tm_summary$Order > 0.04 & df_tm_summary$Order < 0.20 , c("facet")] <- "C"  
+  df_tm_summary[df_tm_summary$Order > 0.20, c("facet")] <- "B"  
+  
+  
+  print(df_tm_summary$facet)
+  
   p <- ggplot() + 
     geom_pointrange(data=df_tm_summary, aes(xmin = -Upper, xmax = -Lower, x = -Order, y = Proportion, col = CNA)) +
     labs(x="Timing Scale",y="Proportion of samples") +
@@ -91,10 +101,17 @@ plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_includ
     theme_bw() +
     scale_color_manual(values=p_colours) +
     scale_fill_manual(values=p_colours) + 
+    theme(axis.text.x = element_text(size=rel(1.5)),
+          axis.text.y = element_text(size=rel(1.5)),
+          axis.title.x = element_text(size=rel(1.2)),
+          axis.title.y = element_text(size=rel(1.2)),
+          legend.position = "none"
+          ) +
+    scale_x_continuous(breaks = seq(d_start, d_end, d_int)) +
     geom_label_repel(data=df_tm_summary,aes(x = -Order, y = Proportion,label=Name, col = CNA),max.overlaps = Inf,box.padding=0.5,point.padding=0.5)
+    
     if (isDiscontinuous) {
       p <- p + facet_grid(.~facet, scales = "free", space = "free") +
-        scale_x_continuous(breaks = seq(d_start, d_end, d_int)) + 
         theme(strip.text.x = element_blank())
     }
 
@@ -105,20 +122,19 @@ plot_tm_proportions <- function(name,samples_count,scale_min,scale_max,hd_includ
 # p_uk_2 <- plot_tm_proportions("PPCGUKB",79,-0.25,0,F,F)
 # com_uk_plot <- grid.arrange(p_uk_1, p_uk_2, nrow = 2)
 # 
-# p_ppcg_1 <- plot_tm_proportions("PPCGA",431,-0.25,0,T,F)
-# p_ppcg_2 <- plot_tm_proportions("PPCGB",138,-0.25,0,F,T,0.10,-0.20,0,0.01)
+# p_ppcg_1 <- plot_tm_proportions("PPCGA",431,-0.25,0,T,F,0,-0.05,0,0.001)
+# p_ppcg_2 <- plot_tm_proportions("PPCGB",138,-0.25,0,F,T,0.10,-0.20,0,0.005)
 # com_ppcg_plot1 <- grid.arrange(p_ppcg_1, p_ppcg_2, nrow = 2)
 # 
-# p_ppcg_3 <- plot_tm_proportions("PPCGC",249,-0.25,0,T,T,0.15,-0.25,0,0.01)
+# p_ppcg_3 <- plot_tm_proportions("PPCGC",249,-0.25,0,T,T,0.15,-0.25,0,0.002)
 # com_ppcg_plot2 <- grid.arrange(p_ppcg_3, p_ppcg_1, nrow = 2)
+# 
+# ggsave("XPPCGUK_prop_plot.png", plot = com_uk_plot)
+# ggsave("XPPCG_prop_plot1.png", plot = com_ppcg_plot1)
+# ggsave("XPPCG_prop_plot2.png", plot = com_ppcg_plot2)
 
-#ggsave("PPCGUK_prop_plot.png", plot = com_uk_plot)
-#ggsave("PPCG_prop_plot1.png", plot = com_ppcg_plot1)
-#ggsave("PPCG_prop_plot2.png", plot = com_ppcg_plot2)
-
-
-p_ppcgl_1 <- plot_tm_proportions("PPCGAl",491,-0.25,0,T,F)
-p_ppcgl_2 <- plot_tm_proportions("PPCGBl",327,-0.25,0,F,F)
+p_ppcgl_1 <- plot_tm_proportions("PPCGAl",491,-0.25,0,T,F,0.15,-10,0,0.25)
+p_ppcgl_2 <- plot_tm_proportions("PPCGBl",327,-0.25,0,F,F,0.15,-10,0,0.1)
 com_ppcgl_plot1 <- grid.arrange(p_ppcgl_1, p_ppcgl_2, nrow = 2)
-
-#ggsave("PPCGl_prop_plot1.png", plot = com_ppcgl_plot1)
+com_ppcgl_plot1
+#ggsave("XPPCGl_prop_plot1.png", plot = com_ppcgl_plot1)

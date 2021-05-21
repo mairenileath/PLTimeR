@@ -10,7 +10,6 @@ plot_A=plot_tm_ordering(A_out, "A")
 plot_B=plot_tm_ordering(B_out, "B")
 #plot_C=plot_tm_ordering(C_out, "C")
 
-
 #plot_A <- plot_A + theme(legend.position = "none")
 #plot_B <- plot_B + theme(legend.position = "none")
 

@@ -1,7 +1,7 @@
+setwd("C:\Users\willi\OneDrive\University\RP1\Cluster Analysis - Workspace")
+
 source("functions_subtyping.R")
 
-df_plot <- data.frame(matrix(vector(),0,5,dimnames=list(c(), c("ID", "Region", "Type", "Count", "Prop", "PVal"))), stringsAsFactors = F)
-df_sig <- data.frame(matrix(vector(),0,3,dimnames=list(c(), c("Region","PVal", "Sig"))), stringsAsFactors = F)
 get_cluster_split <- function(ppcg, country, df) {
 
   ppcg_tot <- ppcg
@@ -35,24 +35,24 @@ get_cluster_split <- function(ppcg, country, df) {
   
   print(paste0("Test: ", test_stat))
   
-  if (test_stat < 0.05) {
-    if (perc > perc_all) {
-      sig <- "A"
-    } else {
-      sig <- "B"
-    }
-  } else {
-    sig <- "N"
-  }
-  
-  if (country == "Total") {
+  # if (test_stat < 0.05) {
+  #   if (perc > perc_all) {
+  #     sig <- "A"
+  #   } else {
+  #     sig <- "B"
+  #   }
+  # } else {
+  #   sig <- "N"
+  # }
+  # 
+  if (country == "PPCG") {
     count_A <- all_count_A
     count_B <- all_count_B
   } else {
     count_A <- reg_count_A
     count_B <- reg_count_B
   }
-  
+  print("A")
   row_A <- data.frame(paste0(country,"_A"), paste0(country," (",(count_A + count_B),")"), "A", count_A, (count_A/(count_A + count_B)), test_stat)
   colnames(row_A) <- c("ID", "Region", "Type", "Count", "Prop", "PVal")
   df <- rbind(df, row_A)
@@ -96,13 +96,23 @@ ppcg_aus <- ppcg_aus[, c("Sample_ID","Cluster")]
 ppcg_can <- ppcg_can[, c("Sample_ID","Cluster")]
 ppcg_den <- ppcg_den[, c("Sample_ID","Cluster")] 
 
-df_plot <- get_cluster_split(region,"Total",df_plot)
-df_plot <- get_cluster_split(region,"France",df_plot)
-df_plot <- get_cluster_split(region,"Germany",df_plot)
-df_plot <- get_cluster_split(region,"UK",df_plot)
+df_plot <- data.frame(matrix(vector(),0,6,dimnames=list(c(), c("ID", "Region", "Type", "Count", "Prop", "PVal"))), stringsAsFactors = F)
+df_sig <- data.frame(matrix(vector(),0,3,dimnames=list(c(), c("Region","PVal", "Sig"))), stringsAsFactors = F)
+
+
+df_plot <- get_cluster_split(region,"PPCG",df_plot)
 df_plot <- get_cluster_split(region,"Australia",df_plot)
 df_plot <- get_cluster_split(region,"Canada",df_plot)
 df_plot <- get_cluster_split(region,"Denmark",df_plot)
+df_plot <- get_cluster_split(region,"France",df_plot)
+df_plot <- get_cluster_split(region,"Germany",df_plot)
+df_plot <- get_cluster_split(region,"UK",df_plot)
+
+
+
+
+
+
 
 # if (test_stat < 0.05) {
 #   if (perc > perc_all) {
@@ -158,9 +168,11 @@ df_plot$Region <- factor(df_plot$Region, levels=unique(df_plot$Region))
 
 pl <- ggplot(data = df_plot, aes(x = reorder(Region,-Region), y = Prop, fill = Type)) +
   geom_bar(stat="identity", position=position_fill()) +
-  #coord_flip() +
-  ylab("Proportion of samples") +
-  xlab("Region") #+
-  #theme(axis.text.y = element_text(colour = a))
+  coord_flip() +
+  theme_bw() +
+  xlab("Region") +
+  scale_y_continuous("Proportion of samples", breaks=c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00))
 pl
 
+pl
+ggsave(paste0("PPCG_region_split.png"),plot = pl)

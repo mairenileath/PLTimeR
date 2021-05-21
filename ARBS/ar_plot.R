@@ -26,13 +26,17 @@ ppcg_blue_count <- nrow(df_ppcg[df_ppcg$color == "blue",])
 ppcg_grey_count <- nrow(df_ppcg[df_ppcg$color == "grey",])
 
 plot_a <- plot_arbs_bars(df_atef,"Original UK Run - 158 samples")
-plot_b <- plot_arbs_bars(df_ppcguk, "Our UK Run - 158 samples")
-plot_c <- plot_arbs_bars(df_ppcg,"839 Samples")
+plot_b <- plot_arbs_bars(df_ppcguk, "UK Cohort - 158 samples")
+plot_c <- plot_arbs_bars(df_ppcg,"PPCG Cohort - 839 samples")
 
 #com_plot <- grid.arrange(plot_a, plot_b, plot_c, nrow=3)
-com_plot <- grid.arrange(plot_a, plot_b, nrow=2)
+com_plot <- grid.arrange(plot_b, plot_c, nrow=2)
 #com_plot
-ggsave(paste0("arbs_uk_comp_158.png"), plot=com_plot)
 
+com_plot
+
+#ggsave(paste0("arbs_uk_comp_158_atef.png"), plot=plot_a)
+ggsave(paste0("arbsCombinedPlot.png"), plot=com_plot)
+ggsave(paste0("arbs_uk_comp_158.png"), plot=plot_b)
 ggsave(paste0("arbs_uk_comp_839.png"), plot=plot_c)
 

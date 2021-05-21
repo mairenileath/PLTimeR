@@ -73,17 +73,20 @@ dep_list <- feature_list[(feature_list$Sample_ID %in% df_arbs[df_arbs$color == "
 
 hm_enr_plot <- ggplot(enr_list, aes(x = Sample_ID, feature, fill = value)) + 
 geom_tile() +
-scale_fill_gradient(low="white", high="#4169E1") +
+scale_fill_gradient(low="white", high="#008000") +
 xlab("Enriched Samples") +
 ylab("Summary measurement") +
 theme(axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
+      #axis.text.y = element_text(size=rel(1.5)),
+      axis.title.x = element_text(size=rel(1.2)),
+      axis.title.y = element_text(size=rel(1.2)),
       legend.position = "none"
       )
 
 hm_int_plot <- ggplot(int_list, aes(x = Sample_ID, feature, fill = value)) + 
   geom_tile() +
-  scale_fill_gradient(low="white", high="#4169E1") +
+  scale_fill_gradient(low="white", high="#008000") +
   xlab("Intermediate Samples") +
   ylab("Summary measurement") +
   theme(axis.text.x = element_blank(),
@@ -97,14 +100,17 @@ hm_int_plot <- ggplot(int_list, aes(x = Sample_ID, feature, fill = value)) +
 
 hm_dep_plot <- ggplot(dep_list, aes(x = Sample_ID, feature, fill = value)) + 
   geom_tile() +
-  scale_fill_gradient(low="white", high="#4169E1") +
+  #scale_fill_gradient(low="white", high="#4169E1") +
+  scale_fill_gradient(low="white", high="#008000") +
   xlab("Depleted Samples") +
   ylab("Summary measurement") +
+  labs(color = "Value") + 
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
-        axis.title.y = element_blank()
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size=rel(1.2))
         )
 
 

@@ -28,7 +28,7 @@ format_tm <- function() {
 
   ppcg <- ppcg[order(ppcg$Sample_ID),]
   
-  write.table(ppcg, file = "CA_tm_ppcg.txt", sep="\t",quote=F, row.names = FALSE)
+  write.table(ppcg, file = "CA_tm_ppcg1.txt", sep="\t",quote=F, row.names = FALSE)
   
   ppcguk_1 <- read.csv("PPCGUK_samples_c1.txt", sep = "\t", header=FALSE)
   colnames(ppcguk_1) <- c("Sample_ID")
@@ -43,6 +43,20 @@ format_tm <- function() {
   ppcguk <- ppcguk[order(ppcguk$Sample_ID),]
   
   write.table(ppcguk, file = "CA_tm_ppcguk.txt", sep="\t",quote=F, row.names = FALSE)
+  
+  ppcgl_1 <- read.csv("PPCGl_samples_c1.txt", sep = "\t", header=FALSE)
+  colnames(ppcgl_1) <- c("Sample_ID")
+  ppcgl_2 <- read.csv("PPCGl_samples_c2.txt", sep = "\t", header=FALSE)
+  colnames(ppcgl_2) <- c("Sample_ID")
+  
+  ppcgl_1$Cluster <- 1
+  ppcgl_2$Cluster <- 2
+  
+  ppcgl <- rbind(ppcgl_1,ppcgl_2)
+  
+  ppcgl <- ppcgl[order(ppcgl$Sample_ID),]
+  
+  write.table(ppcgl, file = "CA_tm_ppcg2.txt", sep="\t",quote=F, row.names = FALSE)
 }
 
 format_arbs <- function() {
@@ -59,7 +73,8 @@ format_arbs <- function() {
 
 arbs <- read.csv("CA_arbs.txt", sep = "\t")
 
-ppcg <- read.csv("CA_tm_ppcg.txt", sep = "\t")
+ppcg1 <- read.csv("CA_tm_ppcg1.txt", sep = "\t")
+ppcg2 <- read.csv("CA_tm_ppcg2.txt", sep = "\t")
 ppcguk <- read.csv("CA_tm_ppcguk.txt", sep = "\t")
 
 evo <- read.csv("evo_results.txt", sep = "\t")
@@ -121,31 +136,57 @@ for (i in 1:nrow(type_comp)) {
   #   type_comp[i,c("Type_Group")] <- 2
   # }
 }
+print(paste0("pre-tm-type 1: ",nrow(type_comp[type_comp$Type_Group == 1,])))
+print(paste0("pre-tm-type 2: ",nrow(type_comp[type_comp$Type_Group == 2,])))
+print(paste0("pre-tm-pca 1: ",nrow(type_comp[type_comp$PCA_Group == 1,])))
+print(paste0("pre-tm-pca 2: ",nrow(type_comp[type_comp$PCA_Group == 2,])))
+print(paste0("pre-tm-tsne 1: ",nrow(type_comp[type_comp$TSNE_Group == 1,])))
+print(paste0("pre-tm-tsne 2: ",nrow(type_comp[type_comp$TSNE_Group == 2,])))
+print(paste0("pre-tm-umap 1: ",nrow(type_comp[type_comp$UMAP_Group == 1,])))
+print(paste0("pre-tm-umap 2: ",nrow(type_comp[type_comp$UMAP_Group == 2,])))
+print(paste0("pre-tm-som 1: ",nrow(type_comp[type_comp$SOM_Group == 1,])))
+print(paste0("pre-tm-som 2: ",nrow(type_comp[type_comp$SOM_Group == 2,])))
+print(paste0("pre-tm-ae 1: ",nrow(type_comp[type_comp$AE_Group == 1,])))
+print(paste0("pre-tm-ae 2: ",nrow(type_comp[type_comp$AE_Group == 2,])))
 
-type_comp <- merge(type_comp, ppcg, by="Sample_ID")
-colnames(type_comp) <- c("Sample_ID", "PCA_Group","TSNE_Group","SOM_Group","AE_Group", "UMAP_Group", "Type_Group","PPCG_Group")
+type_comp <- merge(type_comp, ppcg1, by="Sample_ID")
+colnames(type_comp) <- c("Sample_ID", "PCA_Group","TSNE_Group","SOM_Group","AE_Group", "UMAP_Group", "Type_Group","PPCG1_Group")
+type_comp <- merge(type_comp, ppcg2, by="Sample_ID")
+colnames(type_comp) <- c("Sample_ID", "PCA_Group","TSNE_Group","SOM_Group","AE_Group", "UMAP_Group", "Type_Group","PPCG1_Group","PPCG2_Group")
 type_comp <- merge(type_comp, arbs, by="Sample_ID")
-colnames(type_comp) <- c("Sample_ID", "PCA_Group","TSNE_Group","SOM_Group","AE_Group", "UMAP_Group", "Type_Group", "PPCG_Group", "ARBS_Group")
+colnames(type_comp) <- c("Sample_ID", "PCA_Group","TSNE_Group","SOM_Group","AE_Group", "UMAP_Group", "Type_Group", "PPCG1_Group", "PPCG2_Group", "ARBS_Group")
 
-type_comp$FinType_Group <- NA
+type_comp$FinType1_Group <- NA
+type_comp$FinType2_Group <- NA
 
 #Set PPCG Type
 for (i in 1:nrow(type_comp)) {
+  
   type_val <- type_comp[i,c("Type_Group")]
-  ppcg_val <- type_comp[i,c("PPCG_Group")]
+  ppcg_val <- type_comp[i,c("PPCG1_Group")]
+  arbs_val <- type_comp[i,c("ARBS_Group")]
+  
+  if ((type_val == 2 & ppcg_val == 2) | (arbs_val == 2 & type_val == 2) | (ppcg_val == 2 & arbs_val == 2)) {
+    type_comp[i,c("FinType1_Group")] <- 1
+  } else {
+    type_comp[i,c("FinType1_Group")] <- 2
+  }
+  
+  type_val <- type_comp[i,c("Type_Group")]
+  ppcg_val <- type_comp[i,c("PPCG2_Group")]
   arbs_val <- type_comp[i,c("ARBS_Group")]
 
   if ((type_val == 2 & ppcg_val == 2) | (arbs_val == 2 & type_val == 2) | (ppcg_val == 2 & arbs_val == 2)) {
-       type_comp[i,c("FinType_Group")] <- 1
+       type_comp[i,c("FinType2_Group")] <- 1
   } else {
-     type_comp[i,c("FinType_Group")] <- 2
+     type_comp[i,c("FinType2_Group")] <- 2
   }
 }
 
 evo <- merge(evo, ppcguk, by="Sample_ID")
 colnames(evo) <- c("Sample_ID", "Metaclusters","AR_group", "Ordering","Evotype","TM_UK")
 evo <- merge(evo, type_comp, by="Sample_ID")
-colnames(evo) <- c("Sample_ID", "Metaclusters","AR_group", "Ordering","Evotype","TM_UK","ca_pca","ca_tsne","ca_som","ca_ae", "ca_umap","type_com","TM_PPCG","ca_arbs","fintype_com")
+colnames(evo) <- c("Sample_ID", "Metaclusters","AR_group", "Ordering","Evotype","TM_UK","ca_pca","ca_tsne","ca_som","ca_ae", "ca_umap","type_com","TM_PPCG1","TM_PPCG2","ca_arbs","fintype_com1","fintype_com2")
 
 #Clusterings
 
@@ -164,28 +205,27 @@ print(paste("2:",nrow(type_comp[type_comp$AE_Group == 2,])))
 print("UMAP_Group")
 print(paste("1:",nrow(type_comp[type_comp$UMAP_Group == 1,])))
 print(paste("2:",nrow(type_comp[type_comp$UMAP_Group == 2,])))
-print(paste("3:",nrow(type_comp[type_comp$UMAP_Group == 3,])))
-print(paste("4:",nrow(type_comp[type_comp$UMAP_Group == 4,])))
-print(paste("5:",nrow(type_comp[type_comp$UMAP_Group == 5,])))
-print(paste("6:",nrow(type_comp[type_comp$UMAP_Group == 6,])))
-print(paste("7:",nrow(type_comp[type_comp$UMAP_Group == 7,])))
-print(paste("8:",nrow(type_comp[type_comp$UMAP_Group == 8,])))
-print(paste("9:",nrow(type_comp[type_comp$UMAP_Group == 9,])))
 print("Type_Group")
 print(paste("C1:",nrow(type_comp[type_comp$Type_Group == 1,])))
 print(paste("C2:",nrow(type_comp[type_comp$Type_Group == 2,])))
 print(paste("U:",nrow(type_comp[type_comp$Type_Group == 3,])))
-print("PPCG_Group")
-print(paste("PPCGA:",nrow(type_comp[type_comp$PPCG_Group == 1,])))
-print(paste("PPCGB:",nrow(type_comp[type_comp$PPCG_Group == 2,])))
-print(paste("PPCGC:",nrow(type_comp[type_comp$PPCG_Group == 3,])))
+print("PPCG1_Group")
+print(paste("PPCGA1:",nrow(type_comp[type_comp$PPCG1_Group == 1,])))
+print(paste("PPCGB1:",nrow(type_comp[type_comp$PPCG1_Group == 2,])))
+print(paste("PPCGC1:",nrow(type_comp[type_comp$PPCG1_Group == 3,])))
+print("PPCG2_Group")
+print(paste("PPCGA2:",nrow(type_comp[type_comp$PPCG2_Group == 1,])))
+print(paste("PPCGB2:",nrow(type_comp[type_comp$PPCG2_Group == 2,])))
 print("ARBS_Group")
 print(paste("Enriched:",nrow(type_comp[type_comp$ARBS_Group == 1,])))
 print(paste("Depleted:",nrow(type_comp[type_comp$ARBS_Group == 2,])))
 print(paste("Intermediate:",nrow(type_comp[type_comp$ARBS_Group == 3,])))
-print("FinType_Group")
-print(paste("A:",nrow(type_comp[type_comp$FinType_Group == 1,])))
-print(paste("B:",nrow(type_comp[type_comp$FinType_Group == 2,])))
+print("FinType_Group1")
+print(paste("A:",nrow(type_comp[type_comp$FinType1_Group == 1,])))
+print(paste("B:",nrow(type_comp[type_comp$FinType1_Group == 2,])))
+print("FinType_Group2")
+print(paste("A:",nrow(type_comp[type_comp$FinType2_Group == 1,])))
+print(paste("B:",nrow(type_comp[type_comp$FinType2_Group == 2,])))
 
 print("Metaclusters")
 print(paste("MC-B2:",nrow(evo[evo$Metaclusters == 1,])))
@@ -219,27 +259,27 @@ print(paste("2:",nrow(evo[evo$ca_ae == 2,])))
 print("ca_umap")
 print(paste("1:",nrow(evo[evo$ca_umap == 1,])))
 print(paste("2:",nrow(evo[evo$ca_umap == 2,])))
-print(paste("3:",nrow(evo[evo$ca_umap == 3,])))
-print(paste("4:",nrow(evo[evo$ca_umap == 4,])))
-print(paste("5:",nrow(evo[evo$ca_umap == 5,])))
-print(paste("6:",nrow(evo[evo$ca_umap == 6,])))
-print(paste("7:",nrow(evo[evo$ca_umap == 7,])))
-print(paste("8:",nrow(evo[evo$ca_umap == 8,])))
-print(paste("9:",nrow(evo[evo$ca_umap == 9,])))
 print("type_com")
 print(paste("C1:",nrow(evo[evo$type_com == 1,])))
 print(paste("C2:",nrow(evo[evo$type_com == 2,])))
-print("TM_PPCG")
-print(paste("PPCGA:",nrow(evo[evo$TM_PPCG == 1,])))
-print(paste("PPCGB:",nrow(evo[evo$TM_PPCG == 2,])))
-print(paste("PPCGC:",nrow(evo[evo$TM_PPCG == 3,])))
+print("TM_PPCG1")
+print(paste("PPCGA1:",nrow(evo[evo$TM_PPCG1 == 1,])))
+print(paste("PPCGB1:",nrow(evo[evo$TM_PPCG1 == 2,])))
+print(paste("PPCGC1:",nrow(evo[evo$TM_PPCG1 == 3,])))
+print("TM_PPCG2")
+print(paste("PPCGA2:",nrow(evo[evo$TM_PPCG2 == 1,])))
+print(paste("PPCGB2:",nrow(evo[evo$TM_PPCG2 == 2,])))
+print(paste("PPCGC2:",nrow(evo[evo$TM_PPCG2 == 3,])))
 print("ca_arbs")
 print(paste("Enriched:",nrow(evo[evo$ca_arbs == 1,])))
 print(paste("Depleted:",nrow(evo[evo$ca_arbs == 2,])))
 print(paste("Intermediate:",nrow(evo[evo$ca_arbs == 3,])))
-print("fintype_com")
-print(paste("A:",nrow(evo[evo$fintype_com == 1,])))
-print(paste("B:",nrow(evo[evo$fintype_com == 2,])))
+print("fintype_com1")
+print(paste("A:",nrow(evo[evo$fintype_com1 == 1,])))
+print(paste("B:",nrow(evo[evo$fintype_com1 == 2,])))
+print("fintype_com2")
+print(paste("A:",nrow(evo[evo$fintype_com2 == 1,])))
+print(paste("B:",nrow(evo[evo$fintype_com2 == 2,])))
 
 
 #Adjusted Rand Index (ARI)
@@ -254,14 +294,25 @@ print(paste("EVO/eAR",adjustedRandIndex(evo$Evotype,evo$AR_group)))
 print(paste("EVO/eO",adjustedRandIndex(evo$Evotype,evo$Ordering)))
 print(paste("EVO/eM",adjustedRandIndex(evo$Evotype,evo$Metaclusters)))
 
-#Comparing our orderings with Wk orderings
-print(paste("PPCG/UK",adjustedRandIndex(evo$TM_PPCG,evo$TM_UK)))
+#Comparing our orderings (1) with Wk orderings
+print(paste("PPCG1/UK",adjustedRandIndex(evo$TM_PPCG1,evo$TM_UK)))
 print(paste("eO/UK",adjustedRandIndex(evo$Ordering,evo$TM_UK)))
-print(paste("eO/PPCG",adjustedRandIndex(evo$Ordering,evo$TM_PPCG)))
+print(paste("eO/PPCG1",adjustedRandIndex(evo$Ordering,evo$TM_PPCG1)))
+
+#Comparing our orderings (2) with Wk orderings
+print(paste("PPCG2/UK",adjustedRandIndex(evo$TM_PPCG2,evo$TM_UK)))
+print(paste("eO/UK",adjustedRandIndex(evo$Ordering,evo$TM_UK)))
+print(paste("eO/PPCG2",adjustedRandIndex(evo$Ordering,evo$TM_PPCG2)))
+
+#Comparing our orderings (1) with our orderings (2)
+print(paste("PPCG1/PPCG2",adjustedRandIndex(evo$TM_PPCG1,evo$TM_PPCG2)))
+print(paste("eO/PPCG1",adjustedRandIndex(evo$Ordering,evo$TM_PPCG1)))
+print(paste("eO/PPCG2",adjustedRandIndex(evo$Ordering,evo$TM_PPCG2)))
 
 #Comparing PPCG orderings with evotypes
 print(paste("EVO/UK",adjustedRandIndex(evo$Evotype,evo$TM_UK)))
-print(paste("EVO/PPCG",adjustedRandIndex(evo$Evotype,evo$TM_PPCG)))
+print(paste("EVO/PPCG1",adjustedRandIndex(evo$Evotype,evo$TM_PPCG1)))
+print(paste("EVO/PPCG2",adjustedRandIndex(evo$Evotype,evo$TM_PPCG2)))
 
 #Comparing our methods with Wk metaclustering
 print(paste("eM/pca",adjustedRandIndex(evo$Metaclusters,evo$ca_pca)))
@@ -287,6 +338,9 @@ print(paste("eM/type",adjustedRandIndex(evo$Metaclusters,evo$type_com)))
 #Comparing our composite cluster with Wk evotype
 print(paste("EVO/type",adjustedRandIndex(evo$Evotype,evo$type_com)))
 
+#Compare PPCG methods
+print(paste("tm1/tm2:",adjustedRandIndex(type_comp$PPCG1_Group,type_comp$PPCG2_Group)))
+
 #Comparison of all our methods
 print(paste("pca/tsne:",adjustedRandIndex(type_comp$PCA_Group,type_comp$TSNE_Group)))
 print(paste("pca/som:",adjustedRandIndex(type_comp$PCA_Group,type_comp$SOM_Group)))
@@ -299,13 +353,19 @@ print(paste("umap/tsne:",adjustedRandIndex(type_comp$UMAP_Group,type_comp$TSNE_G
 print(paste("umap/som:",adjustedRandIndex(type_comp$UMAP_Group,type_comp$SOM_Group)))
 print(paste("umap/ae:",adjustedRandIndex(type_comp$UMAP_Group,type_comp$AE_Group)))
 
+print(paste("clust/ordering1:",adjustedRandIndex(type_comp$Type_Group,type_comp$PPCG1_Group)))
+print(paste("ordering1/arbs:",adjustedRandIndex(type_comp$PPCG1_Group,type_comp$ARBS_Group)))
+print(paste("clust/arbs:",adjustedRandIndex(type_comp$Type_Group,type_comp$ARBS_Group)))
+
 #Comparison of Clustering, PPCG Ordering and PPCG ARBS
-print(paste("clust/ordering:",adjustedRandIndex(type_comp$Type_Group,type_comp$PPCG_Group)))
-print(paste("ordering/arbs:",adjustedRandIndex(type_comp$PPCG_Group,type_comp$ARBS_Group)))
+print(paste("clust/ordering2:",adjustedRandIndex(type_comp$Type_Group,type_comp$PPCG2_Group)))
+print(paste("ordering2/arbs:",adjustedRandIndex(type_comp$PPCG2_Group,type_comp$ARBS_Group)))
 print(paste("clust/arbs:",adjustedRandIndex(type_comp$Type_Group,type_comp$ARBS_Group)))
             
 #Comparison            
-print(paste("EVO/PPCGTYPE:",adjustedRandIndex(evo$Evotype,evo$fintype_com)))
+print(paste("EVO/PPCGTYPE1:",adjustedRandIndex(evo$Evotype,evo$fintype_com1)))
+#Comparison            
+print(paste("EVO/PPCGTYPE2:",adjustedRandIndex(evo$Evotype,evo$fintype_com2)))
 
 print(paste("arbs/umap:",adjustedRandIndex(type_comp$ARBS_Group,type_comp$UMAP_Group)))
 print(paste("arbs/pca:",adjustedRandIndex(type_comp$ARBS_Group,type_comp$PCA_Group)))
@@ -313,15 +373,34 @@ print(paste("arbs/tsne:",adjustedRandIndex(type_comp$ARBS_Group,type_comp$TSNE_G
 print(paste("arbs/som:",adjustedRandIndex(type_comp$ARBS_Group,type_comp$SOM_Group)))
 print(paste("arbs/ae:",adjustedRandIndex(type_comp$ARBS_Group,type_comp$AE_Group)))
 
+print(paste("clust/pca:",adjustedRandIndex(type_comp$Type_Group,type_comp$PCA_Group)))
+print(paste("clust/som:",adjustedRandIndex(type_comp$Type_Group,type_comp$SOM_Group)))
+print(paste("clust/ae:",adjustedRandIndex(type_comp$Type_Group,type_comp$AE_Group)))
 
+print(paste("clust/pca:",adjustedRandIndex(type_comp$Type_Group,type_comp$PCA_Group)))
+print(paste("clust/som:",adjustedRandIndex(type_comp$Type_Group,type_comp$SOM_Group)))
+print(paste("clust/ae:",adjustedRandIndex(type_comp$Type_Group,type_comp$AE_Group)))
 
+print(paste("PPCGTYPE2/arbs:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$ARBS_Group)))
+print(paste("PPCGTYPE2/ordering2:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$PPCG2_Group)))
+print(paste("PPCGTYPE2/ae:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$Type_Group)))
 
+print(paste("PPCGTYPE2/pca:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$PCA_Group)))
+print(paste("PPCGTYPE2/som:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$SOM_Group)))
+print(paste("PPCGTYPE2/ae:",adjustedRandIndex(type_comp$FinType2_Group,type_comp$AE_Group)))
 
 #Output PPCG Type Summary
-ppcg_type <- type_comp[,c("Sample_ID","FinType_Group")]
-
+ppcg_type <- type_comp[,c("Sample_ID","Type_Group")]
 colnames(ppcg_type) <- c("Sample_ID","Cluster")
-write.table(ppcg_type, file = "Clust_FinType.txt", sep="\t",quote=F, row.names = FALSE)
+write.table(ppcg_type, file = "Clust_Type.txt", sep="\t",quote=F, row.names = FALSE)
+
+ppcg_type1 <- type_comp[,c("Sample_ID","FinType1_Group")]
+colnames(ppcg_type1) <- c("Sample_ID","Cluster")
+write.table(ppcg_type1, file = "Clust_FinType1.txt", sep="\t",quote=F, row.names = FALSE)
+
+ppcg_type2 <- type_comp[,c("Sample_ID","FinType2_Group")]
+colnames(ppcg_type2) <- c("Sample_ID","Cluster")
+write.table(ppcg_type2, file = "Clust_FinType2.txt", sep="\t",quote=F, row.names = FALSE)
 
 #Reordering labels ahead of confusion
 type_comp[type_comp$PCA_Group == 1, c("PCA_Group")] <- "A"
@@ -355,18 +434,18 @@ type_comp[type_comp$UMAP_Group == "B", c("UMAP_Group")] <- 1
 # 
 # #MC-B2 is 1, MC-B1 is 2, MC-A is 3
 # 
-# confused_matrix("pca/som",type_comp$PCA_Group,type_comp$SOM_Group,T)
-# confused_matrix("pca/ae",type_comp$PCA_Group,type_comp$AE_Group,T)
-# confused_matrix("som/ae",type_comp$SOM_Group,type_comp$AE_Group,T)
+confused_matrix("pca/som",type_comp$PCA_Group,type_comp$SOM_Group,T)
+confused_matrix("pca/ae",type_comp$PCA_Group,type_comp$AE_Group,T)
+confused_matrix("som/ae",type_comp$SOM_Group,type_comp$AE_Group,T)
 # 
 # 
-# confused_matrix("clust/ordering",type_comp$Type_Group,type_comp$PPCG_Group,F)
-# confused_matrix("ordering/arbs",type_comp$PPCG_Group,type_comp$ARBS_Group,F)
-# confused_matrix("clust/arbs",type_comp$Type_Group,type_comp$ARBS_Group,F)
+confused_matrix("clust/ordering",type_comp$Type_Group,type_comp$PPCG2_Group,T)
+confused_matrix("ordering/arbs",type_comp$PPCG2_Group,type_comp$ARBS_Group,F)
+confused_matrix("clust/arbs",type_comp$Type_Group,type_comp$ARBS_Group,F)
 
 # confused_matrix("eM/type",evo$Metaclusters,evo$type_com,T)
 # 
-confused_matrix("EVO/PPCGTYPE",evo$Evotype,evo$fintype_com,T)
+confused_matrix("EVO/PPCGTYPE",evo$Evotype,evo$fintype_com2,T)
 # 
 # confused_matrix("eAR/arbs",evo$AR_group,evo$ca_arbs,T)
 
@@ -383,5 +462,7 @@ confused_matrix("EVO/PPCGTYPE",evo$Evotype,evo$fintype_com,T)
 # confused_matrix("umap/som:",type_comp$UMAP_Group,type_comp$SOM_Group,F)
 # confused_matrix("umap/ae:",type_comp$UMAP_Group,type_comp$AE_Group,F)
 
-
+#confused_matrix("PPCG1/PPCG2",type_comp$PPCG1_Group,type_comp$PPCG2_Group,F)
+#confused_matrix("PPCG1/eO",evo$TM_PPCG1,evo$Ordering,F)
+confused_matrix("PPCG2/eO",evo$TM_PPCG2,evo$Ordering,F)
 

@@ -95,8 +95,9 @@ set_cna_name <- function(cna_name) {
   
   cna_start_mb <- format(round((as.integer(cna_start)/1000000),2), nsmall = 2)
   cna_end_mb <- format(round((as.integer(cna_end)/1000000),2), nsmall = 2)
-
-  mod_name <- paste0(cna_type, " ", cna_chr,":",cna_start_mb,"Mb-",cna_end_mb, "Mb", ifelse(genes_names!="",paste0(" (",genes_names,")"),""))
+  
+  mod_name <- paste0(cna_type, " ", cna_chr,":",cna_start_mb,"-",cna_end_mb, "Mb", ifelse(genes_names!="",paste0(" (",genes_names,")"),""))
+  #mod_name <- paste0(cna_type, " ", cna_chr,":",cna_start_mb,"-",cna_end_mb, "Mb")
   
   return(mod_name)
 }
@@ -254,15 +255,23 @@ plot_arbs_bars <- function(df_data,title) {
     break_ticks <- c(-0.50, -0.40, -0.30, -0.20, -0.10, 0.00, 0.10, 0.20, 0.30, 0.40, 0.50)
   }
   
-  p = ggplot(data=df_data, aes(x=reorder(sample, -obs_sim_adj), y=obs_sim_adj, fill=color)) +
-    geom_bar(stat="identity", colour="black") +
+  p <- ggplot(data=df_data, aes(x=reorder(sample, -obs_sim_adj), y=obs_sim_adj, fill=color)) +
+    geom_bar(stat="identity", width=1) +
     ylab("Normalised Proportion") +
-    xlab("Samples") +
-    scale_fill_manual("Legend", labels=c("Enriched", "Indeterminate", "Depleted"), values = c("blue" = "#4169E1", "grey" = "#F5F5F5", "red" = "#FF4500")) +
+    xlab(title) +
+    scale_fill_manual("Legend", labels=c("Enriched", "Indeterminate", "Depleted"), values = c("blue" = "#4169E1", "grey" = "#808080", "red" = "#FF4500")) +
     theme_classic() +
     scale_y_continuous(breaks = break_ticks) +
-    theme(axis.text.x = element_blank(),axis.ticks.x = element_blank()) +
-    ggtitle(title)
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.text.y = element_text(size=rel(1.5)),
+          axis.title.y = element_text(size=rel(1.2)),
+          axis.title.x = element_text(size=rel(1.2)),
+          legend.position = "none")#+
+          #legend.position = c(0.9,0.9)) #+
+    #ggtitle(title)
+  
+  p <- p + geom_hline(yintercept = 0, color = "black")
   
   return(p)
 }
