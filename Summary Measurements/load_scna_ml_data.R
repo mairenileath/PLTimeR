@@ -136,11 +136,6 @@ find_cna_presence <- function(sample_id, df_merge, cna_list) {
           #To check that there is no overlap they must be EITHER
           #Both values are smaller than both start and end, or bigger than both
           #So NOT no overlap
-
-          #if (!((sam_start < cna_start & sam_end < cna_start & sam_start < cna_end & sam_end < cna_end) | (sam_start > cna_start & sam_end > cna_start & sam_start > cna_end & sam_end > cna_end))){
-          #  exists = 1
-          #  break
-          #}
           
           if (sam_start == cna_start & sam_end == cna_end){
             exists = 1
