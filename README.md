@@ -7,7 +7,9 @@ functions_subtyping.R must be available to other R scripts.
 
 #### Running
 01_brp_sim.sh
+
 02_dist_CI_per_bin_count_Obs-Sim.sh
+
 03_brp_prop_20Kb.sh
 
 #### Plots for distribution of categories
