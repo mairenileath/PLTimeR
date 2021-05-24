@@ -1,6 +1,10 @@
 # SubtypingMSc
 Code for prostate subtyping MSc project with David Wedge
 
+ARBS contains minor change from version provided by Atef Sahli of the University of Manchester.
+
+Timing Model has changes from version provided by Iliana Peneva and Naser Ansari-Pour from the University of Oxford. 
+
 functions_subtyping.R must be available to other R scripts.
 
 ## ARBS
