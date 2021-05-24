@@ -87,17 +87,17 @@ tm_ordering_plot_totals.R
 ## Get summary measurements
 Run each to generate summary.txt files
 
-    load_indel_ml_data.R
+load_indel_ml_data.R
     
-    load_other_ml_data.R
+load_other_ml_data.R
     
-    load_pga_ml_data.R
+load_pga_ml_data.R
     
-    load_scna_ml_data.R
+load_scna_ml_data.R
     
-    load_snv_ml_data.R
+load_snv_ml_data.R
     
-    load_sv_ml_data.R
+load_sv_ml_data.R
 
 Run merge_data.R to create cna_summary.txt
 
