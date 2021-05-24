@@ -22,25 +22,41 @@ ar_heatmap.R
 
 #### Function scripts (modified from Iliana's version)
 01_prepare_subclones_for_timing.R
+
 02_01_identify_enriched_regions_gain.R
+
 02_01_identify_enriched_regions_hd.R
+
 02_01_identify_enriched_regions_loh.R
+
 02_01_identify_enriched_regions.R
+
 02_02_fdr_summary_function.R
+
 03_prepare_enriched_regions_for_ordering.R
+
 04_01_tree_building_functions.R
+
 04_02_order_events_across_cohort.R
+
 
 #### Run sequence
 tm_1_run.R
+
 tm_2_run.R
+
 tm_3_run.R
+
 tm_4_run.R
+
 
 #### Used for running with seperated SCNA types
 tm_2_run_gain.R
+
 tm_2_run_hd.R
+
 tm_2_run_loh.R
+
 
 #### Create distance matrix
 tm_cluster_generate_distance_summary.R
@@ -56,20 +72,31 @@ tm_cluster_prepare_subclone_list.R
 
 #### Summaries
 tm_CNA_counts.R
+
 tm_get_cna_from_merge.R
+
 
 #### Plot results
 tm_PPCG_orderingplot.R
+
 tm_UK_orderingplot.R
+
 tm_ordering_plot_totals.R
 
+
 ## Get summary measurements
-Run each to generate '_summary.txt' files
+Run each to generate summary.txt files
+
     load_indel_ml_data.R
+    
     load_other_ml_data.R
+    
     load_pga_ml_data.R
+    
     load_scna_ml_data.R
+    
     load_snv_ml_data.R
+    
     load_sv_ml_data.R
 
 Run merge_data.R to create cna_summary.txt
@@ -136,4 +163,5 @@ cl_generic_heatmap.R
 
 ##### Summarise by region
 cl_region.R
+
 cl_region_aggregate.R
