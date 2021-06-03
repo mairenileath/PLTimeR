@@ -50,9 +50,11 @@ for (i in colnames(data)) {
 write.table(df_distances, file = paste0(cohort_name,"_distance_summary.txt"), sep="\t",quote=F, row.names = FALSE)
 }
 
-clusterVisualize = function(cohort_name) {
+clusterVisualizeAndGroup = function(cohort_name, cluster_count=2, hclust.method='average') {
 
   library(ggdendro)
+  library(data.table)
+
   source("functions_subtyping.R")
 
   #Import data
@@ -61,11 +63,24 @@ clusterVisualize = function(cohort_name) {
   #Converts to matrix
   df_mat <- acast(df_distances, A~B, value.var="Distance", mean)
   df_dist <- as.dist(df_mat)
-
+  
   #Hierarchical clustering
-  hclust_result <- hclust(df_dist, method = 'average')
+  hclust_result <- hclust(df_dist, method = hclust.method)
 
   hier_clust_plot <- ggdendrogram(hclust_result, rotate = FALSE, size = 2)
   hier_clust_plot
   ggsave(paste0(cohort_name,"_Hierarchical_Clustering_Plot.pdf"), plot = hier_clust_plot)
-}
+
+  #Cut off a cluster number
+  cut_tree <- cutree(hclust_result, k=cluster_count)
+
+  df_groups <- setDT(as.data.frame(cut_tree),keep.rownames = TRUE)
+  colnames(df_groups) = c('sample', 'cluster')
+
+  #Get each unique cluster value
+  clusters <- unique(df_groups$cluster)
+  for (i in 1:length(clusters)) {
+    cluster_samples <- df_groups[df_groups$cluster == clusters[i],]
+    write.table(cluster_samples$sample, file = paste0(cohort_name,"_samples_c",clusters[i],".txt"), sep="\t",quote=F,row.names=FALSE,col.names=FALSE)
+  }
+}  
