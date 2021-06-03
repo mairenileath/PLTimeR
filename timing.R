@@ -5,8 +5,9 @@
 #' @param r_path
 #' @param data_dir
 #' @param output_dir
+#' @param model
 
-timer = function(tumour_type, genome_path, r_path, data_dir, output_dir){
+timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, model){
 rm(list = ls())
 
 library(data.table)
@@ -17,11 +18,14 @@ library(tidyr)
 library(copynumber)
 library(PlackettLuce)
 library(reshape2)
+library(PLMIX)
 
 source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
 source(paste0(r_path,"02_01_identify_enriched_regions.R"))
 source(paste0(r_path,"02_02_fdr_summary_function.R"))
 source(paste0(r_path,"03_prepare_enriched_regions_for_ordering.R"))
+source(paste0(r_path,"04_01_tree_building_functions.R"))
+source(paste0(r_path,"04_02_order_events_across_cohort.R"))
 
 hg_genome <- read.table(genome_path,header = TRUE)
 chr_lengths = hg_genome$end
@@ -33,6 +37,9 @@ loh_dir = paste0(output_dir,"loh/")
 pvals_dir = paste0(output_dir,"pvals/")
 enriched_dir = paste0(output_dir,"enriched/")
 merged_dir = paste0(output_dir,"merged/") 
+mixed_dir = paste0(output_dir,"mixed/")
+pl_dir = paste0(output_dir,"pl_out/")
+annotated_segments_file = paste0("./outputs/",tumour_type,"_annotated_segments.txt")
 annotated_segments_file = paste0(output_dir, tumour_type,"_annotated_segments.txt")
 allsegs_file = paste0(output_dir, tumour_type, "_allsegs.txt")
 
@@ -89,5 +96,18 @@ multipcf_new_breakpoints(output_dir, tumour_type, enriched_dir)
 # Inputs: annotated segments file and enriched region files
 # Outputs: files with enriched regions (separate files for LOH, HD and gain) in the format for the ordering script
 prepare_ordering_data(annotated_segments_file, tumour_type, enriched_dir, genome_path, merged_dir)
+ 
+# Identify matrix of relationships between orderings and generate ordering plot
+# Outputs: outs matrix and plots
+if (model=='mixed') {
+    order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, mixed_dir,TRUE)
+} else if (model=='notmo') {
+    order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, FALSE, "PLMIX", NULL, pl_dir,TRUE)
+} else if (model=='lmixed') {
+    order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, mixed_dir, FALSE)
+} else if (model=='lnotmo') {
+    order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, FALSE, "PlackettLuce", NULL, pl_dir,FALSE)
+}
+
 
 }
