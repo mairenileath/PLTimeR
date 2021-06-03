@@ -25,14 +25,7 @@ functions_subtyping.R must be available to other R scripts.
 
 04_02_order_events_across_cohort.R
 
-#### Create distance matrix
-tm_cluster_generate_distance_summary.R
-
-#### View hierarchical cluster of distance summary
-tm_cluster_visualise.R
-
-#### Get distance summary groups
-tm_group_cluster.R
+05_distance_summary_functions.R
 
 #### Get SCNA raw files from PPCGID
 tm_cluster_prepare_subclone_list.R
