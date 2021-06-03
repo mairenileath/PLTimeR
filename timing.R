@@ -19,12 +19,16 @@ library(PlackettLuce)
 library(reshape2)
 
 source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
+source(paste0(r_path,"02_01_identify_enriched_regions.R"))
 
 hg_genome <- read.table(genome_path,header = TRUE)
 chr_lengths = hg_genome$end
 refsegs_dir = paste0(output_dir, "refsegs/")
 landscape_dir = paste0(output_dir, "/cnlandscape/")
 allsegs_file = paste0(output_dir, tumour_type, "_allsegs.txt")
+gain_dir = paste0(output_dir, "gain/")
+hd_dir = paste0(output_dir,"hd/")
+loh_dir = paste0(output_dir,"loh/")
 annotated_segments_file = paste0(output_dir, tumour_type,"_annotated_segments.txt")
 
 #Collate the subclones data from Battenberg into a single file and add the ploidy of the sample.
@@ -46,5 +50,12 @@ prepare_data_for_landscape(annotated_segments_file, tumour_type, chr_lengths, re
 # Inputs: annotated_segments file and refsegs files
 # Outputs: landscape plots
 plot_CN_landscape(annotated_segments_file, refsegs_dir, tumour_type, chr_lengths, landscape_dir)
+  
+
+#To be run 1000 times
+#Simulate random LOH, gains and HD to identify enriched events
+# Inputs: annotated_segments file and refsegs files
+# Outputs: simulations for gain, hd and loh
+identify_enriched_regions(annotated_segments_file, refsegs_dir, gain_dir, loh_dir, hd_dir, tumour_type, chr_lengths, run)
 
 }
