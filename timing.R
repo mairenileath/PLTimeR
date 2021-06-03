@@ -5,109 +5,118 @@
 #' @param r_path
 #' @param data_dir
 #' @param output_dir
+#' @param cna_type
 #' @param model
 
-timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, model){
-rm(list = ls())
+timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type, model){
+  rm(list = ls())
 
-library(data.table)
-library(ggplot2)
-library(cowplot)
-library(dplyr)
-library(tidyr)
-library(copynumber)
-library(PlackettLuce)
-library(reshape2)
-library(PLMIX)
+  library(data.table)
+  library(ggplot2)
+  library(cowplot)
+  library(dplyr)
+  library(tidyr)
+  library(copynumber)
+  library(PlackettLuce)
+  library(reshape2)
+  library(PLMIX)
 
-source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
-source(paste0(r_path,"02_01_identify_enriched_regions.R"))
-source(paste0(r_path,"02_02_fdr_summary_function.R"))
-source(paste0(r_path,"03_prepare_enriched_regions_for_ordering.R"))
-source(paste0(r_path,"04_01_tree_building_functions.R"))
-source(paste0(r_path,"04_02_order_events_across_cohort.R"))
+  source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
+  source(paste0(r_path,"02_01_identify_enriched_regions.R"))
+  source(paste0(r_path,"02_01_identify_enriched_regions_gain.R"))
+  source(paste0(r_path,"02_01_identify_enriched_regions_loh.R"))
+  source(paste0(r_path,"02_01_identify_enriched_regions_hd.R"))
+  source(paste0(r_path,"02_02_fdr_summary_function.R"))
+  source(paste0(r_path,"03_prepare_enriched_regions_for_ordering.R"))
+  source(paste0(r_path,"04_01_tree_building_functions.R"))
+  source(paste0(r_path,"04_02_order_events_across_cohort.R"))
 
-hg_genome <- read.table(genome_path,header = TRUE)
-chr_lengths = hg_genome$end
-refsegs_dir = paste0(output_dir,"refsegs/")
-landscape_dir = paste0(output_dir,"/cnlandscape/")
-gain_dir = paste0(output_dir, "gain/")
-hd_dir = paste0(output_dir,"hd/")
-loh_dir = paste0(output_dir,"loh/")
-pvals_dir = paste0(output_dir,"pvals/")
-enriched_dir = paste0(output_dir,"enriched/")
-merged_dir = paste0(output_dir,"merged/") 
-mixed_dir = paste0(output_dir,"mixed/")
-pl_dir = paste0(output_dir,"pl_out/")
-annotated_segments_file = paste0("./outputs/",tumour_type,"_annotated_segments.txt")
-annotated_segments_file = paste0(output_dir, tumour_type,"_annotated_segments.txt")
-allsegs_file = paste0(output_dir, tumour_type, "_allsegs.txt")
+  hg_genome <- read.table(genome_path,header = TRUE)
+  chr_lengths = hg_genome$end
+  refsegs_dir = paste0(output_dir,"refsegs/")
+  landscape_dir = paste0(output_dir,"/cnlandscape/")
+  gain_dir = paste0(output_dir, "gain/")
+  hd_dir = paste0(output_dir,"hd/")
+  loh_dir = paste0(output_dir,"loh/")
+  pvals_dir = paste0(output_dir,"pvals/")
+  enriched_dir = paste0(output_dir,"enriched/")
+  merged_dir = paste0(output_dir,"merged/") 
+  mixed_dir = paste0(output_dir,"mixed/")
+  pl_dir = paste0(output_dir,"pl_out/")
+  annotated_segments_file = paste0("./outputs/",tumour_type,"_annotated_segments.txt")
+  annotated_segments_file = paste0(output_dir, tumour_type,"_annotated_segments.txt")
+  allsegs_file = paste0(output_dir, tumour_type, "_allsegs.txt")
 
-#Collate the subclones data from Battenberg into a single file and add the ploidy of the sample.
-# Inputs: subclone files
-# Outputs: allsegs file
-subclone_collation(data_dir, tumour_type, output_dir)
+  #Collate the subclones data from Battenberg into a single file and add the ploidy of the sample.
+  # Inputs: subclone files
+  # Outputs: allsegs file
+  subclone_collation(data_dir, tumour_type, output_dir)
 
-#Sets types of CNA
-# Inputs: allsegs file
-# Outputs: annotated_segments file
-CNA_annotation(allsegs_file, tumour_type, output_dir)
+  #Sets types of CNA
+  # Inputs: allsegs file
+  # Outputs: annotated_segments file
+  CNA_annotation(allsegs_file, tumour_type, output_dir)
 
-#Prepare data for plotting of landscape of CNAs across the whole genome.
-# Inputs: annotated_segments file
-# Outputs: refsegs files
-prepare_data_for_landscape(annotated_segments_file, tumour_type, chr_lengths, refsegs_dir)
+  #Prepare data for plotting of landscape of CNAs across the whole genome.
+  # Inputs: annotated_segments file
+  # Outputs: refsegs files
+  prepare_data_for_landscape(annotated_segments_file, tumour_type, chr_lengths, refsegs_dir)
 
-#Plot the CNA data across the genome (all/clonal/subclonal aberrations)
-# Inputs: annotated_segments file and refsegs files
-# Outputs: landscape plots
-plot_CN_landscape(annotated_segments_file, refsegs_dir, tumour_type, chr_lengths, landscape_dir)
+  #Plot the CNA data across the genome (all/clonal/subclonal aberrations)
+  # Inputs: annotated_segments file and refsegs files
+  # Outputs: landscape plots
+  plot_CN_landscape(annotated_segments_file, refsegs_dir, tumour_type, chr_lengths, landscape_dir)
   
+  #To be run 1000 times
+  #Simulate random LOH, gains and HD to identify enriched events
+  # Inputs: annotated_segments file and refsegs files
+  # Outputs: simulations for gain, hd and loh
 
-#To be run 1000 times
-#Simulate random LOH, gains and HD to identify enriched events
-# Inputs: annotated_segments file and refsegs files
-# Outputs: simulations for gain, hd and loh
-identify_enriched_regions(annotated_segments_file, refsegs_dir, gain_dir, loh_dir, hd_dir, tumour_type, chr_lengths, run)
+  if (cna_type=="all") {
+    identify_enriched_regions(annotated_segments_file, refsegs_dir, gain_dir, loh_dir, hd_dir, tumour_type, chr_lengths, run)
+  } else if (cna_type=="gain") {
+    identify_enriched_regions_gain(annotated_segments_file, refsegs_dir, gain_dir, tumour_type, run)
+  } else if (cna_type=="loh") {
+    identify_enriched_regions_loh(annotated_segments_file, refsegs_dir, loh_dir, tumour_type, run)
+  } else if (cna_type=="hd") {
+    identify_enriched_regions_hd(annotated_segments_file, refsegs_dir, hd_dir, tumour_type, run)
+  }
+  #Identify enriched events using the p-values
+  # Inputs: refsegs and simulations
+  # Outputs: files with enriched regions, the Bonferroni and FDR-corrected p-values
+  fdr_summary(refsegs_dir, gain_dir, tumour_type, "Gain", pvals_dir)
+  fdr_summary(refsegs_dir, loh_dir, tumour_type, "LOH", pvals_dir)
+  fdr_summary(refsegs_dir, hd_dir, tumour_type, "HD", pvals_dir)
 
-#Identify enriched events using the p-values
-# Inputs: refsegs and simulations
-# Outputs: files with enriched regions, the Bonferroni and FDR-corrected p-values
-fdr_summary(refsegs_dir, gain_dir, tumour_type, "Gain", pvals_dir)
-fdr_summary(refsegs_dir, loh_dir, tumour_type, "LOH", pvals_dir)
-fdr_summary(refsegs_dir, hd_dir, tumour_type, "HD", pvals_dir)
+  #Remove artefacts from the enriched regions, eg. segments near telomere, centromere, HLA region, in a few samples
+  # Inputs: 
+  # Outputs: Enriched region files for LOH, HD, Gain, trimmed of artesfacts
+  remove_artefacts(annotated_segments_file, tumour_type, enriched_dir, pvals_dir, genome_path, 10000, 3)
 
-#Remove artefacts from the enriched regions, eg. segments near telomere, centromere, HLA region, in a few samples
-# Inputs: 
-# Outputs: Enriched region files for LOH, HD, Gain, trimmed of artesfacts
-remove_artefacts(annotated_segments_file, tumour_type, enriched_dir, pvals_dir, genome_path, 10000, 3)
-
-#Merge segments overlapping the enriched regions
-# Inputs: annotated segments file and enriched region files
-# Outputs: merged enriched segments and the plots of the enriched regions are output
-merge_enriched_regions(annotated_segments_file, tumour_type, enriched_dir, genome_path, enriched_dir)
-
-#Check if any new breakpoints should be added to the enriched regions
-# Inputs: enriched region files
-# Outputs: merged enriched regions (separate files for LOH, HD and gain) and plots of the segments overlapping the enriched regions
-multipcf_new_breakpoints(output_dir, tumour_type, enriched_dir)
-
-#Process the enriched data into the format required for the ordering step with the Plackett-Luce model
-# Inputs: annotated segments file and enriched region files
-# Outputs: files with enriched regions (separate files for LOH, HD and gain) in the format for the ordering script
-prepare_ordering_data(annotated_segments_file, tumour_type, enriched_dir, genome_path, merged_dir)
- 
-# Identify matrix of relationships between orderings and generate ordering plot
-# Outputs: outs matrix and plots
-if (model=='mixed') {
+  #Merge segments overlapping the enriched regions
+  # Inputs: annotated segments file and enriched region files
+  # Outputs: merged enriched segments and the plots of the enriched regions are output
+  merge_enriched_regions(annotated_segments_file, tumour_type, enriched_dir, genome_path, enriched_dir)
+  
+  #Check if any new breakpoints should be added to the enriched regions
+  # Inputs: enriched region files
+  # Outputs: merged enriched regions (separate files for LOH, HD and gain) and plots of the segments overlapping the enriched regions
+  multipcf_new_breakpoints(output_dir, tumour_type, enriched_dir)
+  
+  #Process the enriched data into the format required for the ordering step with the Plackett-Luce model
+  # Inputs: annotated segments file and enriched region files
+  # Outputs: files with enriched regions (separate files for LOH, HD and gain) in the format for the ordering script
+  prepare_ordering_data(annotated_segments_file, tumour_type, enriched_dir, genome_path, merged_dir)
+  
+  # Identify matrix of relationships between orderings and generate ordering plot
+  # Outputs: outs matrix and plots
+  if (model=='mixed') {
     order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, mixed_dir,TRUE)
-} else if (model=='notmo') {
+  } else if (model=='notmo') {
     order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, FALSE, "PLMIX", NULL, pl_dir,TRUE)
-} else if (model=='lmixed') {
+  } else if (model=='lmixed') {
     order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, mixed_dir, FALSE)
-} else if (model=='lnotmo') {
+  } else if (model=='lnotmo') {
     order_events_across_chort(annotated_segments_file,merged_dir, tumour_type, FALSE, NULL, FALSE, "PlackettLuce", NULL, pl_dir,FALSE)
-}
-
-
+  } 
 }
