@@ -2,13 +2,16 @@
 #' 
 #' @param tumour_type
 #' @param genome_path
-#' @param r_path
+#' @param r_path Full path to folder with timing model scripts
 #' @param data_dir
-#' @param output_dir
-#' @param cna_type
+#' @param output_dir Full path to a output folder
+#' @param cna_type CNA event to be considered
 #' @param model
+#' @param skip_landscape  Provide TRUE when subclone collation and CNA landscape is already complete (Default: FALSE)
+#' @param skip_simulation  Provide TRUE when random CNA simulation is already complete (Default: FALSE)
+#' @param skip_enrichment  Provide TRUE when eniched CNA events have already been identified (Default: FALSE)
 
-timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type, model){
+timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type, skip_landscape=F, skip_simulation=F, skip_enrichment=F, model){
   rm(list = ls())
 
   library(data.table)
@@ -47,6 +50,7 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
   annotated_segments_file = paste0(output_dir, tumour_type,"_annotated_segments.txt")
   allsegs_file = paste0(output_dir, tumour_type, "_allsegs.txt")
 
+ if (!skip_landscape) {
   #Collate the subclones data from Battenberg into a single file and add the ploidy of the sample.
   # Inputs: subclone files
   # Outputs: allsegs file
@@ -66,12 +70,12 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
   # Inputs: annotated_segments file and refsegs files
   # Outputs: landscape plots
   plot_CN_landscape(annotated_segments_file, refsegs_dir, tumour_type, chr_lengths, landscape_dir)
-  
+ } 
   #To be run 1000 times
   #Simulate random LOH, gains and HD to identify enriched events
   # Inputs: annotated_segments file and refsegs files
   # Outputs: simulations for gain, hd and loh
-
+if (!skip_simulation) {
   if (cna_type=="all") {
     identify_enriched_regions(annotated_segments_file, refsegs_dir, gain_dir, loh_dir, hd_dir, tumour_type, chr_lengths, run)
   } else if (cna_type=="gain") {
@@ -81,6 +85,8 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
   } else if (cna_type=="hd") {
     identify_enriched_regions_hd(annotated_segments_file, refsegs_dir, hd_dir, tumour_type, run)
   }
+ } 
+ if (!skip_enrichment) { 
   #Identify enriched events using the p-values
   # Inputs: refsegs and simulations
   # Outputs: files with enriched regions, the Bonferroni and FDR-corrected p-values
@@ -102,7 +108,7 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
   # Inputs: enriched region files
   # Outputs: merged enriched regions (separate files for LOH, HD and gain) and plots of the segments overlapping the enriched regions
   multipcf_new_breakpoints(output_dir, tumour_type, enriched_dir)
-  
+ } 
   #Process the enriched data into the format required for the ordering step with the Plackett-Luce model
   # Inputs: annotated segments file and enriched region files
   # Outputs: files with enriched regions (separate files for LOH, HD and gain) in the format for the ordering script
