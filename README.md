@@ -25,24 +25,6 @@ functions_subtyping.R must be available to other R scripts.
 
 04_02_order_events_across_cohort.R
 
-#### Run sequence
-tm_1_run.R
-
-tm_2_run.R
-
-tm_3_run.R
-
-tm_4_run.R
-
-
-#### Used for running with seperated SCNA types
-tm_2_run_gain.R
-
-tm_2_run_hd.R
-
-tm_2_run_loh.R
-
-
 #### Create distance matrix
 tm_cluster_generate_distance_summary.R
 
