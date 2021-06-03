@@ -1,10 +1,4 @@
-rm(list = ls())
-library(dplyr)
-library(tidyr)
-library(stats)
-library(reshape2)
-
-cohort_name = "PPCGUK"
+clusterGenerateDistanceSummary = function(cohort_name) {
 
 #Import data
 data <- read.csv(paste0(cohort_name,"_mixture_model_classification_1000its.txt"), sep = "\t", header = TRUE, row.names = NULL)
@@ -13,10 +7,8 @@ data <- subset(data, select = -row.names)
 #Set up empty distances frame
 df_distances <- data.frame(matrix(vector(),0,3,dimnames=list(c(), c("A", "B", "Distance"))), stringsAsFactors = F)
 
-#df_cohort <- read.csv("PPCG_Cohort.txt", header = FALSE)
 df_cohort <- read.csv(paste0(cohort_name,"_mergedseg.txt"), sep = "\t", header = TRUE)
 df_cohort <- df_cohort[,1]
-#colnames(df_cohort) = c("PPCG_Sample_ID")
 df_cohort_unique <- unique(df_cohort)
 df_cohort_unique = substr(df_cohort_unique,0,13)
 
@@ -67,5 +59,5 @@ write.table(df_distances, file = paste0(cohort_name,"_distance_summary.txt"), se
 # hier_clust_plot <- ggdendrogram(hclust_result, rotate = FALSE, size = 2)
 # 
 # save_plot(paste0(cohort_name,"_Hierarchical_Clustering_Plot.png"), plot = hier_clust_plot)
-
+}
 
