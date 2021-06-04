@@ -59,7 +59,7 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
             all.sig.data     <- rbind(all.sig.data,sig.data.segment)
             sig.data.segment = NULL
           }
-        } else {print(paste("chr",i,"has no enriched segments"))}
+        } else {print(paste0("chr",i," has no enriched segments"))}
       }
       all.sig.data$chr = as.character(all.sig.data$chr)
 
@@ -98,7 +98,7 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
           }
         }
         segs_per_chr = nrow(enriched_data) - seg_count
-        print(paste(chrs[i],"has ",segs_per_chr,"enriched region(s)"))
+        print(paste0(chrs[i]," has ",segs_per_chr," enriched region(s)"))
       }
       enriched_data$chr = as.character(enriched_data$chr)
 
@@ -122,13 +122,13 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
           }
         }
         if (!is.null(indices_remove)){
-          print(paste("enriched segment", indices_remove, "removed from chromosome", chrom[i]))
+          print(paste("enriched segment", indices_remove, " removed from chromosome ", chrom[i]))
           CHROM = CHROM[-indices_remove,]
         }
         if (nrow(CHROM)>0){
           ENRICHED = rbind(ENRICHED,CHROM)
         }
-        else {print(paste("Chromosome",chrom[i],": only telomeric and removed"))}
+        else {print(paste("Chromosome",chrom[i],": only telomeric end removed"))}
       }
 
       #identify enriched regions which are at the HLA region and remove #
@@ -169,7 +169,7 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
           ENRICHEDclean$noevent = 1:nrow(ENRICHEDclean)
           write.table(ENRICHEDclean, paste0(output_dir,tumour_type,"_enriched_regions_",cna_type[cna],"_noevent.txt"), sep="\t",quote=F,row.names = F)
 	}
-      } else {print(paste(output_dir,tumour_type,":no file written out - no enriched region remained after correction"))}
+      } else {print(paste(output_dir,tumour_type,": no file written out - no enriched region remained after correction"))}
     } else {print(paste(output_dir ,tumour_type,"_samples_significant_pvals_FDR_",cna_type[cna],".txt"," is empty",sep=""))}
   }
 }
@@ -242,7 +242,7 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
         enriched_regions_plot = ggplot() +
           geom_segment(data = chr_enriched_regions, aes(x = i.startpos, y = y, xend = i.endpos, yend = y, col = Tumour_Name))+
           theme(legend.position = "NONE") +
-          ggtitle(paste(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[k]))+
+          ggtitle(paste0(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[k]))+
           expand_limits(y = 0, x = 0)+
           geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[k],]$end, col = "black", linetype = "longdash")  # plot centromere/telomere
 
@@ -252,7 +252,7 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
       }
         write.table(merged, paste0(output_dir, tumour_type,"_segments_in_enriched_regions_",cna_type[cna],".txt"), sep = "\t", quote = F,row.names = F)
 
-      } else {print(paste(paste(output_dir,tumour_type,"_enriched_regions_",cna_type[cna],"_noevent.txt",sep=""),"does not exist",sep=""))}
+      } else {print(paste0(paste0(output_dir,tumour_type,"_enriched_regions_",cna_type[cna],"_noevent.txt",sep="")," does not exist",sep=""))}
     }
   }
 
