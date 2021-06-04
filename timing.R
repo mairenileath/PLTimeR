@@ -39,9 +39,13 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
   chr_lengths = hg_genome$end
   refsegs_dir = paste0(output_dir,"refsegs/")
   landscape_dir = paste0(output_dir,"/cnlandscape/")
+  if (!file.exists(landscape_dir)) { dir.create(landscape_dir) }
   gain_dir = paste0(output_dir, "gain/")
+  if (!file.exists(gain_dir)) { dir.create(gain_dir) }
   hd_dir = paste0(output_dir,"hd/")
+  if (!file.exists(hd_dir)) { dir.create(hd_dir) 
   loh_dir = paste0(output_dir,"loh/")
+  if (!file.exists(loh_dir)) { dir.create(loh_dir) }
   pvals_dir = paste0(output_dir,"pvals/")
   enriched_dir = paste0(output_dir,"enriched/")
   merged_dir = paste0(output_dir,"merged/") 
