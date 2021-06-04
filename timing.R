@@ -3,19 +3,19 @@
 #' @param tumour_type
 #' @param genome_path
 #' @param r_path Full path to folder with timing model scripts
-#' @param data_dir
+#' @param data_dir Full path to folder with subclones files
 #' @param output_dir Full path to a output folder
 #' @param cna_type CNA event to be considered (Default: "all")
-#' @param model "mixed","lmixed","notmo","lnotmo"
+#' @param model "mixed","lmixed","notmo","lnotmo" (Default: "mixed")
 #' @param minN (Default: 3)
 #' @param min_region (Default: 10000)
 #' @param skip_landscape  Provide TRUE when subclone collation and CNA landscape is already complete (Default: FALSE)
 #' @param skip_simulations  Provide TRUE when random CNA simulation is already complete (Default: FALSE)
 #' @param skip_enrichment  Provide TRUE when eniched CNA events have already been identified (Default: FALSE)
 #' @param skip_ordering Provide TRUE when eniched CNA ordering is already complete (Default: FALSE)
+#' @param ref_genome
 
-timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type, minN=3, min_region=10000, skip_landscape=F, skip_simulations=F, skip_enrichment=F, skip_ordering=F, model){
-  rm(list = ls())
+timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type="all", minN=3, min_region=10000, skip_landscape=F, skip_simulations=F, skip_enrichment=F, skip_ordering=F, model="mixed", ref_genome){
 
   library(data.table)
   library(ggplot2)
@@ -193,23 +193,47 @@ timer = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_typ
     if (model=='mixed') {
       order_events_across_chort(annotated_segments_file,
                                 merged_dir, 
-                                tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, 
-                                mixed_dir,TRUE)
+                                tumour_type, 
+                                driver_mutations=FALSE, 
+                                drivers_file=NULL, 
+                                mixture_model=TRUE, 
+                                model="PLMIX", 
+                                clonal_driver_mutations=NULL, 
+                                mixed_dir,
+                                include_unobserved=TRUE)
     } else if (model=='notmo') {
       order_events_across_chort(annotated_segments_file,
                                 merged_dir, 
-                                tumour_type, FALSE, NULL, FALSE, "PLMIX", NULL, 
-                                pl_dir,TRUE)
+                                tumour_type, 
+                                driver_mutations=FALSE, 
+                                drivers_file=NULL, 
+                                mixture_model=FALSE, 
+                                model="PLMIX", 
+                                clonal_driver_mutations=NULL, 
+                                pl_dir,
+                                include_unobserved=TRUE)
     } else if (model=='lmixed') {
       order_events_across_chort(annotated_segments_file,
                                 merged_dir, 
-                                tumour_type, FALSE, NULL, TRUE, "PLMIX", NULL, 
-                                mixed_dir, FALSE)
+                                tumour_type, 
+                                driver_mutations=FALSE, 
+                                drivers_file=NULL, 
+                                mixture_model=TRUE, 
+                                model="PLMIX", 
+                                clonal_driver_mutations=NULL, 
+                                mixed_dir, 
+                                include_unobserved=FALSE)
     } else if (model=='lnotmo') {
       order_events_across_chort(annotated_segments_file,
                                 merged_dir, 
-                                tumour_type, FALSE, NULL, FALSE, "PlackettLuce", NULL, 
-                                pl_dir,FALSE)
+                                tumour_type, 
+                                driver_mutations=FALSE, 
+                                drivers_file=NULL, 
+                                mixture_model=FALSE, 
+                                model="PlackettLuce", 
+                                clonal_driver_mutations=NULL, 
+                                pl_dir,
+                                include_unobserved=FALSE)
     } 
   }
 }  
