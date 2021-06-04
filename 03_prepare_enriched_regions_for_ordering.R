@@ -10,7 +10,7 @@
 #' @return files with enriched regions (separate files for LOH, HD and gain), with any artefacts removed
 
 
-remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, pvalues_dir, genome_chr_coordinates, min_region_choice=10000, minN_choice=3){
+remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, pvalues_dir, genome_chr_coordinates, min_region_choice, minN_choice){
 
   # LOOP TO GENERATE OUTPUT FOR ALL THREE CNA TYPES
   # load the all segments data
@@ -19,6 +19,8 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
   cna_type  = c("Gain","LOH","HD")
 
   for (cna in 1:length(cna_type)){
+   print(paste0(cna_type[cna], " - Removing arefacts"))	  
+
     # load the pvalues data for this type of CNA
     pvalues_data = read.table(paste0(pvalues_dir, tumour_type,"_samples_significant_pvals_FDR_",cna_type[cna],".txt"), header = T, stringsAsFactors = F)
     names(pvalues_data) = c("chr","sp","ep","val","no.perms.better","p.val","bonf","fdr")
@@ -141,7 +143,6 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
         ENRICHED=setdiff(ENRICHED,HLA)    # remove any segments that are found in HLA region
       }
 
-
       # REMOVE SINGLETONS/RARE DOUBLETS when N is high:
       rare = NULL
       if (nrow(ENRICHED)>0){
@@ -155,7 +156,6 @@ remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, p
           }
         }
       }
-
 
       if (!is.null(rare)){
         ENRICHEDclean = ENRICHED[-rare,]
@@ -191,6 +191,8 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
   allsegments <- read.table(annotated_segments_file, sep = "\t", stringsAsFactors = F, header = T) # load the allsegments file
 
   for (cna in 1:length(cna_type)){
+    print(paste0(cna_type[cna], " - Merging enriched regions"))	  
+	  
     CNAtype <- paste0(c("s","c"), cna_type[cna])
     cna.data <- allsegments[allsegments$CNA %in% CNAtype, ]    # pick up the subclonal and clonal events for this CNA
 
@@ -256,9 +258,6 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
     }
   }
 
-
-
-
 #' Check if any new breakpoints should be added to the enriched regions
 #'
 #' @param enriched_dir Full path to the directory with the files with the enriched regions
@@ -271,6 +270,8 @@ multipcf_new_breakpoints <- function(enriched_dir, tumour_type, output_dir){
   cna_type=c("Gain","LOH","HD")
 
   for (cna in 1:length(cna_type)){
+    print(paste0(cna_type[cna], " - Checking for new breakpoints"))	  
+
     if (file.exists(paste0(enriched_dir, tumour_type,"_segments_in_enriched_regions_",cna_type[cna],".txt"))){
       # load the enriched data for this CNA type
       enriched_regions = read.table(paste0(enriched_dir, tumour_type,"_segments_in_enriched_regions_",cna_type[cna],".txt"), header = T, stringsAsFactors = F)
@@ -345,8 +346,8 @@ prepare_ordering_data <- function(annotated_segments_file, tumour_type, enriched
   allsegments <- read.table(annotated_segments_file, sep = "\t", stringsAsFactors = F, header = T)
   cna_type    <- c("LOH", "Gain", "HD")
 
-
   for (cna in 1:length(cna_type)){
+    print(paste0(cna_type[cna], " - Preparing ordering data"))	  
     CNAtype  <- paste0(c("s","c"), cna_type[cna])
     cna.data <- allsegments[allsegments$CNA %in% CNAtype, ]   # get all the clonal and subclonal events for this type of CNA
 
