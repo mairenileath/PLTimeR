@@ -5,12 +5,12 @@
 #' @param output_dir Full path to the directory where the files with the enriched regions (and the p-values) will be output
 #' @param pvalues_dir Full path to the directory with the FDR-corrected p-values and the enriched regions
 #' @param genome_chr_coordinates Full path to the file with the chromosome coordinates of the hg19 or hg38 build genome
-#' @param min_region A numeric representing the minimum length of enriched region; default = 1e4
-#' @param minN A numeric representing the minimum number of events per segment to be used; default = 3
+#' @param min_region_choice A numeric representing the minimum length of enriched region; default = 10000
+#' @param minN_choice A numeric representing the minimum number of events per segment to be used; default = 3
 #' @return files with enriched regions (separate files for LOH, HD and gain), with any artefacts removed
 
 
-remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, pvalues_dir, genome_chr_coordinates, min_region=10000, minN=3){
+remove_artefacts <- function(annotated_segments_file, tumour_type, output_dir, pvalues_dir, genome_chr_coordinates, min_region_choice=10000, minN_choice=3){
 
   # LOOP TO GENERATE OUTPUT FOR ALL THREE CNA TYPES
   # load the all segments data
