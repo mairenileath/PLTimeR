@@ -411,18 +411,19 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
     } else {
       K <- ncol(orderingmatrix)   # number of events
       # mixture model
-
+      set.seed(123456)     
+      
       # initialisation values
       ordered_matrix <- as.top_ordering(orderingmatrix, format_input='ordering', aggr=F, ties_method = 'random')
-      print("Running mapPLMIX with 1 partition")
+      print("Running mapPLMIX with 1 mixture component")
       MAP_1 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 1, n_start=5, n_iter = 400*1)
-      print("Running mapPLMIX with 2 partitions")
+      print("Running mapPLMIX with 2 mixture components")
       MAP_2 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 2, n_start=5, n_iter = 400*2)
-      print("Running mapPLMIX with 3 partitions")
+      print("Running mapPLMIX with 3 mixture components")
       MAP_3 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 3, n_start=5, n_iter = 400*3)
-      print("Running mapPLMIX with 4 partitions")
+      print("Running mapPLMIX with 4 mixture components")
       MAP_4 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 4,  n_start=5, n_iter = 400*4)
-      print("Running mapPLMIX with 5 partitions"
+      print("Running mapPLMIX with 5 mixture components"
       MAP_5 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 5, n_start=5, n_iter = 400*5)
 
       all_map <- list(MAP_1, MAP_2, MAP_3, MAP_4, MAP_5)
