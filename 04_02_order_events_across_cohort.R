@@ -178,8 +178,6 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
   class.ids_bic <- NULL
   class.ids <- NULL
 
-
-  # get 1000 overall orderings for all patients
   # get 1000 overall orderings for all patients
   for(r in 1:1000){
 
@@ -416,26 +414,26 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
 
       # initialisation values
       ordered_matrix <- as.top_ordering(orderingmatrix, format_input='ordering', aggr=F, ties_method = 'random')
-      MAP_1 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 1,
-                                   n_start=5, n_iter = 400*1)
-      MAP_2 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 2,
-                                   n_start=5, n_iter = 400*2)
-      MAP_3 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 3,
-                                   n_start=5, n_iter = 400*3)
-      MAP_4 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 4,
-                                   n_start=5, n_iter = 400*4)
-      MAP_5 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 5,
-                                   n_start=5, n_iter = 400*5)
+      print("Running mapPLMIX with 1 partition")
+      MAP_1 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 1, n_start=5, n_iter = 400*1)
+      print("Running mapPLMIX with 2 partitions")
+      MAP_2 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 2, n_start=5, n_iter = 400*2)
+      print("Running mapPLMIX with 3 partitions")
+      MAP_3 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 3, n_start=5, n_iter = 400*3)
+      print("Running mapPLMIX with 4 partitions")
+      MAP_4 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 4,  n_start=5, n_iter = 400*4)
+      print("Running mapPLMIX with 5 partitions"
+      MAP_5 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 5, n_start=5, n_iter = 400*5)
 
       all_map <- list(MAP_1, MAP_2, MAP_3, MAP_4, MAP_5)
-      #all_map <- list(MAP_1, MAP_2, MAP_3)
 
       # using bic to pick a model
+      print("Choosing a model based on BIC")
       bics <- rbind(MAP_1$mod$bic, MAP_2$mod$bic, MAP_3$mod$bic, MAP_4$mod$bic, MAP_5$mod$bic)
-      #bics <- rbind(MAP_1$mod$bic, MAP_2$mod$bic, MAP_3$mod$bic)
       chosen_model_bic <- which.min(bics)
 
       # saving the classification for the bic model
+      print("Saving classification for model")
       outputMAP_bic <- all_map[[chosen_model_bic]]
       vector_bic <- outputMAP_bic$mod$P_map  # the bic model
       matrix2_bic <- rbind(matrix2_bic,vector_bic)
