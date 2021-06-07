@@ -501,9 +501,9 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
 
   #3
   if (mixture_model==F) {
-	values <- melt(matrix2, id.vars = NULL)
+	values <- reshape2::melt(matrix2, id.vars = NULL)
   } else {
-  	values <- melt(matrix2_bic, id.vars = NULL)
+  	values <- reshape2::melt(matrix2_bic, id.vars = NULL)
   }
   values$Var1 = NULL
   names(values) = c("event","value")
