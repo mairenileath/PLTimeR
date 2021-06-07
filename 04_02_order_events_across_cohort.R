@@ -38,7 +38,9 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
   
   # load driver mutations data ####
   if (!is.null(drivers_file)){
+    print("Adding driver mutations to model")
     if (file.exists(drivers_file)){
+      print("Loading driver mutations data")
       # the data should be of format Tumour_Name chr startpos endpos nMaj1_A nMin1_A tumour_ploidy CNA noevent w.mean no.chrs.bearing.mut
       drivers_data <- read.table(drivers_file, header = T, stringsAsFactors = F)
       
