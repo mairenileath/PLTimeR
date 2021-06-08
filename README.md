@@ -1,6 +1,6 @@
 # SubtypingMSc
 
-Timing Model has changes from version provided by Iliana Peneva and Naser Ansari-Pour from the University of Oxford. 
+Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, and Ruxandra Tesloianu. 
 
 functions_subtyping.R must be available to other R scripts.
 
@@ -36,19 +36,4 @@ tm_CNA_counts.R
 tm_get_cna_from_merge.R
 
 #### Plot results
-tm_PPCG_orderingplot.R
-
-tm_UK_orderingplot.R
-
 tm_ordering_plot_totals.R
-
-#### Feature proportion of method
-cl_feature_proportion.R
-
-#### Heatmap of method
-cl_generic_heatmap.R
-
-##### Summarise by region
-cl_region.R
-
-cl_region_aggregate.R
