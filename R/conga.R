@@ -15,20 +15,10 @@
 #' @param skip_ordering Provide TRUE when eniched CNA ordering is already complete (Default: FALSE)
 #' @param ref_genome
 
-conga = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type="all", minN=3, min_region=10000, skip_landscape=F, skip_simulations=F, skip_enrichment=F, skip_ordering=F, model="mixed", ref_genome){
+conga = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type="all", minN=3, min_region=10000, skip_landscape=F, skip_simulations=F, skip_enrichment=F, skip_ordering=F, model="mixed", ref_genome) {
 
   library(PlackettLuce)
-
-  source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
-  source(paste0(r_path,"02_01_identify_enriched_regions.R"))
-  source(paste0(r_path,"02_01_identify_enriched_regions_gain.R"))
-  source(paste0(r_path,"02_01_identify_enriched_regions_loh.R"))
-  source(paste0(r_path,"02_01_identify_enriched_regions_hd.R"))
-  source(paste0(r_path,"02_02_fdr_summary_function.R"))
-  source(paste0(r_path,"03_prepare_enriched_regions_for_ordering.R"))
-  source(paste0(r_path,"04_01_tree_building_functions.R"))
-  source(paste0(r_path,"04_02_order_events_across_cohort.R"))
-
+  
   hg_genome <- read.table(genome_path,header = TRUE)
   chr_lengths = hg_genome$end
   refsegs_dir = paste0(output_dir,"refsegs/")
