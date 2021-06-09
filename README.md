@@ -1,10 +1,6 @@
 # CONGA - Chronological OrderiNg of Genomic Aberrations
 
-Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, Ruxandra Tesloianu, Thomas Mitchell, and Máire Ní Leathlobhair.
-
-functions_subtyping.R must be available to other R scripts.
-
-## Timing Model
+Plackett-Luce probabilistic timing model with contributions from Iliana Peneva, Naser Ansari-Pour, Ruxandra Tesloianu, Thomas Mitchell, and Máire Ní Leathlobhair.
 
 #### Function scripts 
 01_prepare_subclones_for_timing.R
@@ -26,9 +22,6 @@ functions_subtyping.R must be available to other R scripts.
 04_02_order_events_across_cohort.R
 
 05_distance_summary_functions.R
-
-#### Get SCNA raw files from PPCGID
-tm_cluster_prepare_subclone_list.R
 
 #### Summaries
 tm_CNA_counts.R
