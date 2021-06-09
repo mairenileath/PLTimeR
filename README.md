@@ -1,6 +1,6 @@
 # CONGA - Chronological OrderiNg of Genomic Aberrations
 
-Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, Ruxandra Tesloianu, and Máire Ní Leathlobhair.
+Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, Ruxandra Tesloianu, Thomas Mitchell, and Máire Ní Leathlobhair.
 
 functions_subtyping.R must be available to other R scripts.
 
