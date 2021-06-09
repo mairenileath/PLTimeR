@@ -1,12 +1,12 @@
-# SubtypingMSc
+# CONGA - Chronological OrderiNg of Genomic Aberrations
 
-Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, and Ruxandra Tesloianu. 
+Timing Model with contributions from Iliana Peneva, Naser Ansari-Pour, Ruxandra Tesloianu, and Máire Ní Leathlobhair.
 
 functions_subtyping.R must be available to other R scripts.
 
 ## Timing Model
 
-#### Function scripts (modified from Iliana's version)
+#### Function scripts 
 01_prepare_subclones_for_timing.R
 
 02_01_identify_enriched_regions_gain.R
