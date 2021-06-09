@@ -17,15 +17,7 @@
 
 conga = function(tumour_type, genome_path, r_path, data_dir, output_dir, cna_type="all", minN=3, min_region=10000, skip_landscape=F, skip_simulations=F, skip_enrichment=F, skip_ordering=F, model="mixed", ref_genome){
 
-  library(data.table)
-  library(ggplot2)
-  library(cowplot)
-  library(dplyr)
-  library(tidyr)
-  library(copynumber)
   library(PlackettLuce)
-  library(reshape2)
-  library(PLMIX)
 
   source(paste0(r_path,"01_prepare_subclones_for_timing.R"))
   source(paste0(r_path,"02_01_identify_enriched_regions.R"))
