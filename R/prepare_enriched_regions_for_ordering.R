@@ -241,12 +241,12 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
 
       for (k in 1:length(chrs)){
         chr_enriched_regions = merged[which(merged$chr==chrs[k]),]   # plot the segments in the enriched regions
-        enriched_regions_plot = ggplot() +
-          geom_segment(data = chr_enriched_regions, aes(x = i.startpos, y = y, xend = i.endpos, yend = y, col = Tumour_Name))+
-          theme(legend.position = "NONE") +
-          ggtitle(paste0(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[k]))+
-          expand_limits(y = 0, x = 0)+
-          geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[k],]$end, col = "black", linetype = "longdash")  # plot centromere/telomere
+        enriched_regions_plot = ggplot2::ggplot() +
+          ggplot2::geom_segment(data = chr_enriched_regions, aes(x = i.startpos, y = y, xend = i.endpos, yend = y, col = Tumour_Name))+
+          ggplot2::theme(legend.position = "NONE") +
+          ggplot2::ggtitle(paste0(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[k]))+
+          ggplot2::expand_limits(y = 0, x = 0)+
+          ggplot2::geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[k],]$end, col = "black", linetype = "longdash")  # plot centromere/telomere
 
         # save the plot for this enriched region
         cowplot::save_plot(paste0(output_dir, tumour_type,"_enriched_",cna_type[cna],"_chr",chrs[k],"_cowplot.pdf"), plot = enriched_regions_plot)
@@ -297,9 +297,9 @@ multipcf_new_breakpoints <- function(enriched_dir, tumour_type, output_dir){
         }
       }
 
-      enriched_segments_plot = ggplot() + geom_point(data = all_enriched_segments, aes(x = i.startpos, y = w.mean, col = Tumour_Name)) + theme(legend.position = "NONE") +
-        facet_grid(chr~.) +
-        labs(x = "Chromosome Position")
+      enriched_segments_plot = ggplot2::ggplot() + ggplot2::geom_point(data = all_enriched_segments, aes(x = i.startpos, y = w.mean, col = Tumour_Name)) + ggplot2::theme(legend.position = "NONE") +
+        ggplot2::facet_grid(chr~.) +
+        ggplot2::labs(x = "Chromosome Position")
       cowplot::save_plot(paste0(output_dir, tumour_type,"_CNA_",cna_type[cna],"_patterns.pdf"), plot = enriched_segments_plot)
 
 
@@ -394,11 +394,11 @@ prepare_ordering_data <- function(annotated_segments_file, tumour_type, enriched
 
       for (i in 1:length(chrs)){
         chr_enriched_regions=merged[which(merged$chr==chrs[i]),]
-        enriched_regions_plot = ggplot() + geom_segment(data=chr_enriched_regions, aes(x = i.startpos, y = y, xend = i.endpos, yend=y, col = Tumour_Name)) +
-          theme(legend.position = "NONE") +
-          ggtitle(paste(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[i])) +
-          expand_limits(y=0,x=0) +
-          geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[i],]$end, col = "black", linetype = "longdash")
+        enriched_regions_plot = ggplot2::ggplot() + ggplot2::geom_segment(data=chr_enriched_regions, aes(x = i.startpos, y = y, xend = i.endpos, yend=y, col = Tumour_Name)) +
+          ggplot2::theme(legend.position = "NONE") +
+          ggplot2::ggtitle(paste(tumour_type, cna_type[cna]," - Enriched regions chr",chrs[i])) +
+          ggplot2::expand_limits(y=0,x=0) +
+          ggplot2::geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[i],]$end, col = "black", linetype = "longdash")
 
         # save the plot
         cowplot::save_plot(paste0(output_dir, tumour_type,"_enriched_", cna_type[cna],"_chr",chrs[i],"cowplot_postFDR4.pdf"), plot = enriched_regions_plot)
