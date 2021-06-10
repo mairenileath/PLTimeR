@@ -209,12 +209,12 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
       print("files read")
 
 
-      setDT(cna.data)                                              # convert cna.data into data.table
-      setDT(enriched)                                              # all the enriched segments
-      setkey(cna.data,"chr","startpos","endpos")                   # sort the cna.data by chr, startpos,endpos
-      setkey(enriched,"chr","startpos","endpos")                   # sort the enriched by chr, startpos, endpos
+      data.table::setDT(cna.data)                                              # convert cna.data into data.table
+      data.table::setDT(enriched)                                              # all the enriched segments
+      data.table::setkey(cna.data,"chr","startpos","endpos")                   # sort the cna.data by chr, startpos,endpos
+      data.table::setkey(enriched,"chr","startpos","endpos")                   # sort the enriched by chr, startpos, endpos
 
-      merged = foverlaps(cna.data, enriched, type = "any", nomatch = 0)     # find the overlaps between the cna.data and the enriched regions (will return only the matches)
+      merged = data.table::foverlaps(cna.data, enriched, type = "any", nomatch = 0)     # find the overlaps between the cna.data and the enriched regions (will return only the matches)
       # merged is in the format first four columns corresponding to/being the same as the enriched regions intervals and the number of the event; then a column with the tumour names and columns with interval for
       # that tumour name overlapping this enriched region (with i.startpos and i.endpos being the start/end of the segment) and then the copy number information for this segment
 
@@ -249,7 +249,7 @@ merge_enriched_regions <- function(annotated_segments_file, tumour_type, enriche
           geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[k],]$end, col = "black", linetype = "longdash")  # plot centromere/telomere
 
         # save the plot for this enriched region
-        save_plot(paste0(output_dir, tumour_type,"_enriched_",cna_type[cna],"_chr",chrs[k],"_cowplot.pdf"), plot = enriched_regions_plot)
+        cowplot::save_plot(paste0(output_dir, tumour_type,"_enriched_",cna_type[cna],"_chr",chrs[k],"_cowplot.pdf"), plot = enriched_regions_plot)
 
       }
         write.table(merged, paste0(output_dir, tumour_type,"_segments_in_enriched_regions_",cna_type[cna],".txt"), sep = "\t", quote = F,row.names = F)
@@ -300,7 +300,7 @@ multipcf_new_breakpoints <- function(enriched_dir, tumour_type, output_dir){
       enriched_segments_plot = ggplot() + geom_point(data = all_enriched_segments, aes(x = i.startpos, y = w.mean, col = Tumour_Name)) + theme(legend.position = "NONE") +
         facet_grid(chr~.) +
         labs(x = "Chromosome Position")
-      save_plot(paste0(output_dir, tumour_type,"_CNA_",cna_type[cna],"_patterns.pdf"), plot = enriched_segments_plot)
+      cowplot::save_plot(paste0(output_dir, tumour_type,"_CNA_",cna_type[cna],"_patterns.pdf"), plot = enriched_segments_plot)
 
 
       # pivot table to prepare for multiPCF  #
@@ -364,13 +364,13 @@ prepare_ordering_data <- function(annotated_segments_file, tumour_type, enriched
       print("files read")
 
       # convert cna.data and enriched to data.tables and order by chromosome, startpos and endpos
-      setDT(cna.data)
-      setDT(enriched)
-      setkey(cna.data,"chr","startpos","endpos")
-      setkey(enriched,"chr","startpos","endpos")
+      data.table::setDT(cna.data)
+      data.table::setDT(enriched)
+      data.table::setkey(cna.data,"chr","startpos","endpos")
+      data.table::setkey(enriched,"chr","startpos","endpos")
 
       # find the overlap between the cna.data and the enriched
-      merged = foverlaps(cna.data, enriched, type = "any", nomatch = 0)
+      merged = data.table::foverlaps(cna.data, enriched, type = "any", nomatch = 0)
 
       # remove regions outside of ENRICHED REGIONS
       merged$i.startpos = ifelse(merged$i.startpos < merged$startpos, merged$startpos, merged$i.startpos)
@@ -401,7 +401,7 @@ prepare_ordering_data <- function(annotated_segments_file, tumour_type, enriched
           geom_vline(xintercept = chr_loc[chr_loc$chr==chrs[i],]$end, col = "black", linetype = "longdash")
 
         # save the plot
-        save_plot(paste0(output_dir, tumour_type,"_enriched_", cna_type[cna],"_chr",chrs[i],"cowplot_postFDR4.pdf"), plot = enriched_regions_plot)
+        cowplot::save_plot(paste0(output_dir, tumour_type,"_enriched_", cna_type[cna],"_chr",chrs[i],"cowplot_postFDR4.pdf"), plot = enriched_regions_plot)
       }
 
       # Prepare the input for the ordering script
