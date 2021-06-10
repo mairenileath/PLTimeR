@@ -14,6 +14,8 @@
 
 
 order_events_across_chort <- function(annotated_segments_file, merged_segments_dir, tumour_type, driver_mutations,drivers_file,mixture_model, model, clonal_driver_mutations, output_dir, include_unobserved){
+  set.seed(123456)     
+	
   # STEP 1: LOAD THE DATA ####
   # load losses data for WGD samples - need to pick up the segments with nMin1_A~1####
   allsegs = read.table(annotated_segments_file, header = T, stringsAsFactors = F)
@@ -389,7 +391,7 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
     }
     if (mixture_model==F){
       if (model=='PlackettLuce'){
-        PL_output <- PlackettLuce(orderingmatrix,verbose = F)
+        PL_output <- PlackettLuce::PlackettLuce(orderingmatrix,verbose = F)
         ordering_vector <- PL_output$coefficients[1:length(events)]
         matrix2 <- rbind(matrix2,ordering_vector)                   # all values of the events' timings so far
         colnames(matrix2) <- paste0('p_', 1:ncol(matrix2))
@@ -413,7 +415,6 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
     } else {
       K <- ncol(orderingmatrix)   # number of events
       # mixture model
-      set.seed(123456)     
       
       # initialisation values
       ordered_matrix <- as.top_ordering(orderingmatrix, format_input='ordering', aggr=F, ties_method = 'random')
