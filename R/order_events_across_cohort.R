@@ -398,7 +398,7 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
         K <- ncol(orderingmatrix)   # number of events
         G <- 1                      # number of groups with different evolutionary trajectories
 
-        outputMAP <- mapPLMIX_multistart(pi_inv=orderingmatrix, K=K, G=G, n_start=1, n_iter=400*G)  # n_start is the number of different starting points
+        outputMAP <- PLMIX::mapPLMIX_multistart(pi_inv=orderingmatrix, K=K, G=G, n_start=1, n_iter=400*G)  # n_start is the number of different starting points
 
 
         ordering_vector<-outputMAP$mod$P_map                      # values of the relative ordering of the events
@@ -418,15 +418,15 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
       # initialisation values
       ordered_matrix <- as.top_ordering(orderingmatrix, format_input='ordering', aggr=F, ties_method = 'random')
       print("Running mapPLMIX with 1 mixture component")
-      MAP_1 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 1, n_start=5, n_iter = 400*1)
+      MAP_1 <- PLMIX::mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 1, n_start=5, n_iter = 400*1)
       print("Running mapPLMIX with 2 mixture components")
-      MAP_2 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 2, n_start=5, n_iter = 400*2)
+      MAP_2 <- PLMIX::mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 2, n_start=5, n_iter = 400*2)
       print("Running mapPLMIX with 3 mixture components")
-      MAP_3 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 3, n_start=5, n_iter = 400*3)
+      MAP_3 <- PLMIX::mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 3, n_start=5, n_iter = 400*3)
       print("Running mapPLMIX with 4 mixture components")
-      MAP_4 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 4,  n_start=5, n_iter = 400*4)
+      MAP_4 <- PLMIX::mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 4,  n_start=5, n_iter = 400*4)
       print("Running mapPLMIX with 5 mixture components"
-      MAP_5 <- mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 5, n_start=5, n_iter = 400*5)
+      MAP_5 <- PLMIX::mapPLMIX_multistart(pi_inv = ordered_matrix, K = K, G = 5, n_start=5, n_iter = 400*5)
 
       all_map <- list(MAP_1, MAP_2, MAP_3, MAP_4, MAP_5)
 
@@ -511,14 +511,14 @@ order_events_across_chort <- function(annotated_segments_file, merged_segments_d
   out$CNA = substr(out$CNA,2,5)
   write.table(out, paste0(output_dir, tumour_type ,"_wgd_ordering_plot_file.txt"), col.names = T, row.names = F,quote = F, sep = "\t")
   #plot
-  timing_plot <- ggplot(out, aes(x = ID, y = -value, col = CNA, fill = CNA)) +
-    geom_violin() +
-    coord_flip() +
-    labs(x="CNA event",y="Timing scale") +
-    ggtitle(paste0(tumour_type, " ", model, " ", run_name, " ordering of CNA events"))
+  timing_plot <- ggplot2::ggplot(out, aes(x = ID, y = -value, col = CNA, fill = CNA)) +
+    ggplot2::geom_violin() +
+    ggplot2::coord_flip() +
+    ggplot2::labs(x="CNA event",y="Timing scale") +
+    ggplot2::ggtitle(paste0(tumour_type, " ", model, " ", run_name, " ordering of CNA events"))
 
   # save plot
-  save_plot(paste0(output_dir, tumour_type, model, run_name, "_CNA_timing_order.pdf"), plot = timing_plot)
+  cowplot::save_plot(paste0(output_dir, tumour_type, model, run_name, "_CNA_timing_order.pdf"), plot = timing_plot)
 
 }
 
